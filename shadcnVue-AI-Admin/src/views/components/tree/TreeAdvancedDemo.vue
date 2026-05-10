@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Tree } from '@/components/ui/tree'
-import type { TreeNode } from '@/components/ui/tree'
+import { Tree } from '@/components/tree'
+import type { TreeNode } from '@/components/tree'
 
 // ==================== 虚拟滚动核心逻辑 ====================
 const containerRef = ref<HTMLElement | null>(null)

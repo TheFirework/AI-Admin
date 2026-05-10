@@ -68,6 +68,19 @@ const componentsRoutes: RouteRecordRaw[] = [
               description: '展示 Tree 组件的高级功能：虚拟滚动、节点过滤、懒加载、事件系统、对外方法调用等',
               requiresAuth: true
             }
+          },
+
+          // TreeSelect 树形选择器演示
+          {
+            path: '/components/tree/tree-select',
+            name: 'TreeSelectDemo',
+            component: () => import('@/views/components/treeSelect/TreeSelectDemo.vue'),
+            meta: {
+              title: 'TreeSelect 选择器',
+              icon: 'ListTree',
+              description: '展示 TreeSelect 组件：单选、多选、搜索、懒加载、严格模式、复选框单选等',
+              requiresAuth: true
+            }
           }
         ]
       }

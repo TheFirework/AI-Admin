@@ -69,7 +69,7 @@ function isHalfChecked(node: TreeNode): boolean {
   return halfCheckedKeys.value.includes(getNodeKey(node, props.nodeKey, props.fieldNames))
 }
 function isLeaf(node: TreeNode): boolean {
-  const isLeafProp = getPropValue(node, 'isLeaf', props.fieldNames) as boolean | undefined
+  const isLeafProp = node?.isLeaf || false
   const children = getPropValue(node, 'children', props.fieldNames) as TreeNode[]
   return !!isLeafProp || !children || children.length === 0
 }
@@ -79,7 +79,8 @@ function isCurrent(node: TreeNode): boolean {
 }
 
 function handleNodeClick(node: TreeNode) {
-  const disabled = getPropValue(node, 'disabled', props.fieldNames) as boolean
+
+  const disabled = node.disabled || false
   if (disabled) return
   const oldCurrentNode = currentNodeKey.value
     ? (findNode(props.data, currentNodeKey.value, props.nodeKey, props.fieldNames) || null)
@@ -208,11 +209,10 @@ function onRootDragMove(evt: any) {
       <TreeItem v-for="node in filteredData" :key="childKey(node)" :node="node" :level="0"
         :is-expanded="isExpanded(node)" :is-checked="isChecked(node)" :is-half-checked="isHalfChecked(node)"
         :is-leaf="isLeaf(node)" :is-current="isCurrent(node)" :show-checkbox="showCheckbox"
-        :disabled="!!getPropValue(node, 'disabled', props.fieldNames)" :show-icon="showIcon" :block-node="blockNode"
-        :draggable="draggable" :expanded-keys="expandedKeys" :checked-keys="checkedKeys"
-        :half-checked-keys="halfCheckedKeys" :current-node-key="currentNodeKey" :highlight-current="highlightCurrent"
-        :field-names="props.fieldNames" :node-key="nodeKey" @toggle-expand="toggleExpand" @toggle-check="toggleCheck"
-        @node-click="handleNodeClick">
+        :disabled="node?.disabled || false" :show-icon="showIcon" :block-node="blockNode" :draggable="draggable"
+        :expanded-keys="expandedKeys" :checked-keys="checkedKeys" :half-checked-keys="halfCheckedKeys"
+        :current-node-key="currentNodeKey" :highlight-current="highlightCurrent" :field-names="props.fieldNames"
+        :node-key="nodeKey" @toggle-expand="toggleExpand" @toggle-check="toggleCheck" @node-click="handleNodeClick">
         <template #default="{ node }">
           <slot :node="node" />
         </template>

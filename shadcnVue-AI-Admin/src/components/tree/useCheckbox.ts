@@ -147,7 +147,7 @@ export function useCheckbox(props: TreeProps, emit: (e: string, ...args: unknown
   }
 
   function toggleCheck(node: TreeNode) {
-    const disabled = getPropValue(node, 'disabled', props.fieldNames) as boolean
+    const disabled = node.disabled || false
     if (disabled) return
 
     const checked = !checkedKeys.value.includes(getNodeKey(node, props.nodeKey, props.fieldNames))

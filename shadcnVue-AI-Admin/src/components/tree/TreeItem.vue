@@ -69,7 +69,7 @@ const isComponentDisabled = computed(() => treeDisabled?.value === true)
 // 节点级禁用：仅当前节点自身被禁用（不影响子节点）
 const isNodeDisabled = computed(() => {
   if (props.disabled) return true // prop 传入的 disabled
-  const nodeDisabled = getPropValue(props.node, 'disabled', props.fieldNames) as boolean | undefined
+  const nodeDisabled = props.node.disabled || false
   return !!nodeDisabled
 })
 
@@ -366,12 +366,12 @@ function onDragMove(evt: any) {
       <TreeItem v-for="child in nodeChildren" :key="childKey(child)" :node="child" :level="level + 1"
         :is-expanded="isChildExpanded(child)" :is-checked="isChildChecked(child)"
         :is-half-checked="isChildHalfChecked(child)" :is-leaf="isChildLeaf(child)" :is-current="isChildCurrent(child)"
-        :show-checkbox="showCheckbox" :disabled="!!getPropValue(child, 'disabled', props.fieldNames)"
-        :show-icon="showIcon" :block-node="blockNode" :draggable="draggable" :expanded-keys="expandedKeys"
-        :checked-keys="checkedKeys" :half-checked-keys="halfCheckedKeys" :current-node-key="currentNodeKey"
-        :highlight-current="highlightCurrent" :field-names="props.fieldNames" :node-key="nodeKey"
-        :parent-locked="isLocked || !!props.node.lockChildren" @toggle-expand="$emit('toggle-expand', $event)"
-        @toggle-check="$emit('toggle-check', $event)" @node-click="$emit('node-click', $event)" />
+        :show-checkbox="showCheckbox" :disabled="child.disabled || false" :show-icon="showIcon" :block-node="blockNode"
+        :draggable="draggable" :expanded-keys="expandedKeys" :checked-keys="checkedKeys"
+        :half-checked-keys="halfCheckedKeys" :current-node-key="currentNodeKey" :highlight-current="highlightCurrent"
+        :field-names="props.fieldNames" :node-key="nodeKey" :parent-locked="isLocked || !!props.node.lockChildren"
+        @toggle-expand="$emit('toggle-expand', $event)" @toggle-check="$emit('toggle-check', $event)"
+        @node-click="$emit('node-click', $event)" />
     </VueDraggable>
 
     <!-- 场景3：锁定状态或非拖拽模式 -->
@@ -380,12 +380,12 @@ function onDragMove(evt: any) {
       <TreeItem v-for="child in nodeChildren" :key="childKey(child)" :node="child" :level="level + 1"
         :is-expanded="isChildExpanded(child)" :is-checked="isChildChecked(child)"
         :is-half-checked="isChildHalfChecked(child)" :is-leaf="isChildLeaf(child)" :is-current="isChildCurrent(child)"
-        :show-checkbox="showCheckbox" :disabled="!!getPropValue(child, 'disabled', props.fieldNames)"
-        :show-icon="showIcon" :block-node="blockNode" :draggable="draggable" :expanded-keys="expandedKeys"
-        :checked-keys="checkedKeys" :half-checked-keys="halfCheckedKeys" :current-node-key="currentNodeKey"
-        :highlight-current="highlightCurrent" :field-names="props.fieldNames" :node-key="nodeKey"
-        :parent-locked="isLocked || !!props.node.lockChildren" @toggle-expand="$emit('toggle-expand', $event)"
-        @toggle-check="$emit('toggle-check', $event)" @node-click="$emit('node-click', $event)" />
+        :show-checkbox="showCheckbox" :disabled="child.disabled || false" :show-icon="showIcon" :block-node="blockNode"
+        :draggable="draggable" :expanded-keys="expandedKeys" :checked-keys="checkedKeys"
+        :half-checked-keys="halfCheckedKeys" :current-node-key="currentNodeKey" :highlight-current="highlightCurrent"
+        :field-names="props.fieldNames" :node-key="nodeKey" :parent-locked="isLocked || !!props.node.lockChildren"
+        @toggle-expand="$emit('toggle-expand', $event)" @toggle-check="$emit('toggle-check', $event)"
+        @node-click="$emit('node-click', $event)" />
     </ul>
   </li>
 </template>

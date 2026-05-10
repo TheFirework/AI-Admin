@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { Tree } from '@/components/ui/tree'
-import type { TreeNode } from '@/components/ui/tree'
+import { Tree } from '@/components/tree'
+import type { TreeNode } from '@/components/tree'
 
 // ==================== 拖拽场景测试数据 ====================
 //
@@ -237,8 +237,8 @@ function onDrop(info: any) {
       <Tree :data="treeData" :show-checkbox="showCheckbox" :check-strictly="checkStrictly"
         :highlight-current="highlightCurrent" :default-expand-all="defaultExpandAll" :accordion="accordion"
         :show-icon="showIcon" :block-node="blockNode" :draggable="draggable" :height="height"
-        :disabled="componentDisabled" :lock-children="componentLockChildren" @check="onCheck"
-        @expand="onExpand" @select="onSelect" @drop="onDrop">
+        :disabled="componentDisabled" :lock-children="componentLockChildren" @check="onCheck" @expand="onExpand"
+        @select="onSelect" @drop="onDrop">
         <!-- 自定义 slot 示例 -->
         <template #default="{ node }">
           <template v-if="node.disabled">
