@@ -10,6 +10,7 @@ export interface TreeNode {
   parentId?: string | number
   allowDrag?: boolean
   allowDrop?: boolean
+  lockChildren?: boolean // 锁定子节点区域（子节点不可拖出也不可接收）
 
   // 新增节点级配置
   checkable?: boolean
@@ -45,6 +46,10 @@ export interface TreeProps {
   height?: number
   fieldNames?: TreePropsConfig
   switcherIcon?: Slot
+
+  // ==================== 组件级控制（影响整个树）====================
+  disabled?: boolean // 组件级禁用：整个树完全禁用（所有节点不可交互）
+  lockChildren?: boolean // 组件级锁定：所有节点不可拖出也不可接收
 }
 
 export interface TreeEmits {

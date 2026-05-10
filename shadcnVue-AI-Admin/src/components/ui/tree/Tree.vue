@@ -25,7 +25,9 @@ const props = withDefaults(defineProps<TreeProps>(), {
     label: 'label',
     key: 'id',
     children: 'children'
-  })
+  }),
+  disabled: false, // 组件级禁用默认值
+  lockChildren: false, // 组件级锁定默认值
 })
 
 const emit = defineEmits<TreeEmits>()
@@ -35,6 +37,10 @@ const { expandedKeys, toggleExpand, isExpanded } = useExpand(props, hookEmit)
 const { treeDrag, childKey, removeFromParent } = useDrag(props, hookEmit)
 
 provide('treeDrag', treeDrag)
+
+// 注入组件级别状态（供所有 TreeItem 子组件使用）
+provide('treeDisabled', computed(() => props.disabled))
+provide('treeLockChildren', computed(() => props.lockChildren))
 
 const treeContainerRef = ref<HTMLElement | null>(null)
 const currentNodeKey = ref<string | number | null>(null)
@@ -183,8 +189,8 @@ function onRootDragMove(evt: any) {
     height && `max-h-${height} overflow-y-auto`
   )" role="tree">
     <VueDraggable v-if="draggable" v-model="filteredData" :group="{ name: 'tree', pull: true, put: true }"
-      :animation="200" handle=".drag-handle" tag="ul" class="list-none m-0 p-0" @start="onRootDragStart"
-      @end="onRootDragEnd" @move="onRootDragMove">
+      :animation="200" handle=".drag-handle" tag="ul" class="list-none m-0 p-0" ghost-class="opacity-50"
+      @start="onRootDragStart" @end="onRootDragEnd" @move="onRootDragMove">
       <TreeItem v-for="node in filteredData" :key="childKey(node)" :node="node" :level="0"
         :is-expanded="isExpanded(node)" :is-checked="isChecked(node)" :is-half-checked="isHalfChecked(node)"
         :is-leaf="isLeaf(node)" :is-current="isCurrent(node)" :show-checkbox="showCheckbox"

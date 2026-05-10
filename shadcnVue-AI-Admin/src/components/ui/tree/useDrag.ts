@@ -22,22 +22,35 @@ export function useDrag(props: TreeProps, emit: (e: string, ...args: unknown[]) 
   }
 
   function canNodeDrag(node: TreeNode): boolean {
-    node.disabled = node.disabled ?? false
-    if (node.disabled) return false
-    if (props?.allowDrag) {
-      if (node?.allowDrag !== undefined) return node.allowDrag
-      if (typeof props?.allowDrag === 'function') return props.allowDrag(node)
-      if (typeof props?.allowDrag === 'boolean') return props.allowDrag
-    }
-    return true
+  node.disabled = node.disabled ?? false
+  if (node.disabled) return false
+
+  // 优先检查节点自身的 allowDrag 配置（无论全局 prop 是否设置）
+  if (node?.allowDrag !== undefined && !node.allowDrag) {
+    return false // 节点显式设置了 allowDrag:false
   }
 
-  function canNodeDrop(targetNode: TreeNode, dragNode: TreeNode): boolean {
-    if (dragNode === targetNode) return false
-    if (isDescendant(dragNode, targetNode)) return false
-    if (targetNode.allowDrop === false) return false
-    return true
+  // 检查全局 allowDrag 配置（函数或布尔值）
+  if (props?.allowDrag) {
+    if (typeof props?.allowDrag === 'function') return props.allowDrag(node)
+    if (typeof props?.allowDrag === 'boolean') return props.allowDrag
   }
+
+  return true
+}
+
+  function canNodeDrop(targetNode: TreeNode, dragNode: TreeNode): boolean {
+  if (dragNode === targetNode) return false
+  if (isDescendant(dragNode, targetNode)) return false
+  if (targetNode.allowDrop === false) return false
+
+  // 叶子节点不允许接收拖入（只有非叶子节点才能作为容器）
+  const targetChildren = getPropValue(targetNode, 'children', props.fieldNames) as TreeNode[] | undefined
+  const targetIsLeaf = !!(targetNode.isLeaf || !targetChildren || targetChildren.length === 0)
+  if (targetIsLeaf) return false
+
+  return true
+}
 
   function removeFromParent(node: TreeNode) {
     const pid = getPropValue(node, 'parentId') as string | number | undefined
