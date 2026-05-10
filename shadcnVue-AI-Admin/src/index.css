@@ -1,0 +1,208 @@
+/* 导入 Noto Sans 字体，支持 400/500/600/700 字重 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap');
+
+/* 导入 Tailwind CSS 核心样式 */
+@import 'tailwindcss';
+/* 导入 tw-animate-css 动画库 */
+@import 'tw-animate-css';
+
+/* 自定义变体：为 .dark 类下的所有子元素应用 dark 样式 */
+@custom-variant dark (&:is(.dark *));
+
+/* Tailwind CSS 主题变量定义 - 将 CSS 变量映射为 Tailwind 主题 */
+@theme inline {
+  /* 字体变量 */
+  --font-heading: var(--font-sans);
+
+  /* 侧边栏颜色变量 */
+  --color-sidebar-ring: var(--sidebar-ring); /* 侧边栏焦点环颜色 */
+  --color-sidebar-border: var(--sidebar-border); /* 侧边栏边框颜色 */
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground); /* 侧边栏强调色前景 */
+  --color-sidebar-accent: var(--sidebar-accent); /* 侧边栏强调色 */
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground); /* 侧边栏主色前景 */
+  --color-sidebar-primary: var(--sidebar-primary); /* 侧边栏主色 */
+  --color-sidebar-foreground: var(--sidebar-foreground); /* 侧边栏前景色 */
+  --color-sidebar: var(--sidebar); /* 侧边栏背景色 */
+
+  /* 图表颜色变量 - 用于数据可视化 */
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+
+  /* 通用颜色变量 */
+  --color-ring: var(--ring); /* 焦点环颜色 */
+  --color-input: var(--input); /* 输入框背景色 */
+  --color-border: var(--border); /* 通用边框颜色 */
+  --color-destructive: var(--destructive); /* 危险/破坏性操作颜色 */
+  --color-accent-foreground: var(--accent-foreground); /* 强调色前景 */
+  --color-accent: var(--accent); /* 强调色 */
+  --color-muted-foreground: var(--muted-foreground); /* 次要文字颜色 */
+  --color-muted: var(--muted); /* 次要背景色 */
+  --color-secondary-foreground: var(--secondary-foreground); /* 次主题前景色 */
+  --color-secondary: var(--secondary); /* 次主题色 */
+  --color-primary-foreground: var(--primary-foreground); /* 主主题前景色 */
+  --color-primary: var(--primary); /* 主主题色 */
+  --color-popover-foreground: var(--popover-foreground); /* 弹出层前景色 */
+  --color-popover: var(--popover); /* 弹出层背景色 */
+  --color-card-foreground: var(--card-foreground); /* 卡片前景色 */
+  --color-card: var(--card); /* 卡片背景色 */
+  --color-foreground: var(--foreground); /* 主要文字颜色 */
+  --color-background: var(--background); /* 页面背景色 */
+
+  /* 圆角大小变量 */
+  --radius-sm: calc(var(--radius) - 4px); /* 小圆角 */
+  --radius-md: calc(var(--radius) - 2px); /* 中等圆角 */
+  --radius-lg: var(--radius); /* 大圆角 */
+  --radius-xl: calc(var(--radius) + 4px); /* 特大圆角 */
+}
+
+/* 浅色主题变量定义 */
+:root {
+  --radius: 0.625rem; /* 基础圆角大小 (10px) */
+
+  /* 基础背景与前景 */
+  --background: oklch(1 0 0); /* 页面背景 - 纯白色 */
+  --foreground: oklch(0.145 0 0); /* 前景文字 - 深黑色 */
+
+  /* 卡片颜色 */
+  --card: oklch(1 0 0); /* 卡片背景 - 白色 */
+  --card-foreground: oklch(0.145 0 0); /* 卡片文字 - 深黑色 */
+
+  /* 弹出层颜色 */
+  --popover: oklch(1 0 0); /* 弹出层背景 - 白色 */
+  --popover-foreground: oklch(0.145 0 0); /* 弹出层文字 - 深黑色 */
+
+  /* 主主题色 */
+  --primary: oklch(0.205 0 0); /* 主色 - 接近黑色 */
+  --primary-foreground: oklch(0.985 0 0); /* 主色前景 - 接近白色 */
+
+  /* 次主题色 */
+  --secondary: oklch(0.97 0 0); /* 次色 - 浅灰色 */
+  --secondary-foreground: oklch(0.205 0 0); /* 次色前景 - 深黑色 */
+
+  /* 次要颜色 */
+  --muted: oklch(0.97 0 0); /* 次要背景 - 浅灰色 */
+  --muted-foreground: oklch(0.556 0 0); /* 次要文字 - 中灰色 */
+
+  /* 强调色 */
+  --accent: oklch(0.97 0 0); /* 强调背景 - 浅灰色 */
+  --accent-foreground: oklch(0.205 0 0); /* 强调文字 - 深黑色 */
+
+  /* 危险/破坏性颜色 */
+  --destructive: oklch(0.577 0.245 27.325); /* 红色系 - 用于警告/错误 */
+
+  /* 边框与输入框 */
+  --border: oklch(0.922 0 0); /* 边框颜色 - 浅灰色 */
+  --input: oklch(0.922 0 0); /* 输入框背景 - 浅灰色 */
+  --ring: oklch(0.708 0 0); /* 焦点环 - 中灰色 */
+
+  /* 图表颜色 */
+  --chart-1: oklch(0.646 0.222 41.116); /* 橙色 */
+  --chart-2: oklch(0.6 0.118 184.704); /* 青色 */
+  --chart-3: oklch(0.398 0.07 227.392); /* 深蓝色 */
+  --chart-4: oklch(0.828 0.189 84.429); /* 黄绿色 */
+  --chart-5: oklch(0.769 0.188 70.08); /* 黄色 */
+
+  /* 侧边栏颜色 */
+  --sidebar: oklch(0.985 0 0); /* 侧边栏背景 - 接近白色 */
+  --sidebar-foreground: oklch(0.145 0 0); /* 侧边栏文字 - 深黑色 */
+  --sidebar-primary: oklch(0.205 0 0); /* 侧边栏主色 - 深黑色 */
+  --sidebar-primary-foreground: oklch(0.985 0 0); /* 侧边栏主色前景 - 接近白色 */
+  --sidebar-accent: oklch(0.97 0 0); /* 侧边栏强调色 - 浅灰色 */
+  --sidebar-accent-foreground: oklch(0.205 0 0); /* 侧边栏强调前景 - 深黑色 */
+  --sidebar-border: oklch(0.922 0 0); /* 侧边栏边框 - 浅灰色 */
+  --sidebar-ring: oklch(0.708 0 0); /* 侧边栏焦点环 - 中灰色 */
+}
+
+/* 深色主题变量定义 */
+.dark {
+  /* 基础背景与前景 */
+  --background: oklch(0.145 0 0); /* 页面背景 - 深黑色 */
+  --foreground: oklch(0.985 0 0); /* 前景文字 - 接近白色 */
+
+  /* 卡片颜色 */
+  --card: oklch(0.205 0 0); /* 卡片背景 - 深灰色 */
+  --card-foreground: oklch(0.985 0 0); /* 卡片文字 - 接近白色 */
+
+  /* 弹出层颜色 */
+  --popover: oklch(0.205 0 0); /* 弹出层背景 - 深灰色 */
+  --popover-foreground: oklch(0.985 0 0); /* 弹出层文字 - 接近白色 */
+
+  /* 主主题色 */
+  --primary: oklch(0.922 0 0); /* 主色 - 浅灰色 */
+  --primary-foreground: oklch(0.205 0 0); /* 主色前景 - 深黑色 */
+
+  /* 次主题色 */
+  --secondary: oklch(0.269 0 0); /* 次色 - 中深灰色 */
+  --secondary-foreground: oklch(0.985 0 0); /* 次色前景 - 接近白色 */
+
+  /* 次要颜色 */
+  --muted: oklch(0.269 0 0); /* 次要背景 - 中深灰色 */
+  --muted-foreground: oklch(0.708 0 0); /* 次要文字 - 中灰色 */
+
+  /* 强调色 */
+  --accent: oklch(0.269 0 0); /* 强调背景 - 中深灰色 */
+  --accent-foreground: oklch(0.985 0 0); /* 强调文字 - 接近白色 */
+
+  /* 危险/破坏性颜色 */
+  --destructive: oklch(0.704 0.191 22.216); /* 红色系 - 用于警告/错误 */
+
+  /* 边框与输入框 */
+  --border: oklch(1 0 0 / 10%); /* 边框颜色 - 白色 10% 透明度 */
+  --input: oklch(1 0 0 / 15%); /* 输入框背景 - 白色 15% 透明度 */
+  --ring: oklch(0.556 0 0); /* 焦点环 - 中灰色 */
+
+  /* 图表颜色 */
+  --chart-1: oklch(0.488 0.243 264.376); /* 紫色 */
+  --chart-2: oklch(0.696 0.17 162.48); /* 蓝绿色 */
+  --chart-3: oklch(0.769 0.188 70.08); /* 黄色 */
+  --chart-4: oklch(0.627 0.265 303.9); /* 粉色 */
+  --chart-5: oklch(0.645 0.246 16.439); /* 红色 */
+
+  /* 侧边栏颜色 */
+  --sidebar: oklch(0.205 0 0); /* 侧边栏背景 - 深灰色 */
+  --sidebar-foreground: oklch(0.985 0 0); /* 侧边栏文字 - 接近白色 */
+  --sidebar-primary: oklch(0.488 0.243 264.376); /* 侧边栏主色 - 紫色 */
+  --sidebar-primary-foreground: oklch(0.985 0 0); /* 侧边栏主色前景 - 接近白色 */
+  --sidebar-accent: oklch(0.269 0 0); /* 侧边栏强调色 - 中深灰色 */
+  --sidebar-accent-foreground: oklch(0.985 0 0); /* 侧边栏强调前景 - 接近白色 */
+  --sidebar-border: oklch(1 0 0 / 10%); /* 侧边栏边框 - 白色 10% 透明度 */
+  --sidebar-ring: oklch(0.556 0 0); /* 侧边栏焦点环 - 中灰色 */
+}
+
+/* 基础样式层 - 全局重置与基础样式 */
+@layer base {
+  /* 全局元素样式 */
+  * {
+    @apply border-border outline-ring/50; /* 默认边框颜色与焦点样式 */
+  }
+
+  /* 页面主体样式 */
+  body {
+    @apply bg-background text-foreground; /* 使用主题背景和前景色 */
+  }
+}
+
+/* 拖拽相关样式 */
+@layer utilities {
+  .sortable-ghost {
+    opacity: 0.4;
+    background: #c8ebfb !important;
+  }
+
+  .sortable-chosen {
+    background: #eee !important;
+  }
+
+  .sortable-drag {
+    opacity: 0.8;
+    cursor: move !important;
+  }
+
+  .sortable-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
