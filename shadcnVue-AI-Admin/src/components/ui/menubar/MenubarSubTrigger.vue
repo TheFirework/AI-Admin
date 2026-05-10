@@ -13,16 +13,14 @@ const forwardedProps = useForwardProps(delegatedProps)
 </script>
 
 <template>
-  <MenubarSubTrigger
-    data-slot="menubar-sub-trigger"
-    :data-inset="inset ? '' : undefined"
-    v-bind="forwardedProps"
+  <MenubarSubTrigger data-slot="menubar-sub-trigger" :data-inset="inset ? '' : undefined" v-bind="forwardedProps"
     :class="cn(
       'focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-[inset]:pl-8',
       props.class,
-    )"
-  >
-    <slot />
-    <ChevronRight class="ml-auto size-4" />
+    )">
+    <span class="inline-flex items-center gap-2 min-w-0">
+      <slot />
+    </span>
+    <ChevronRight class="ml-auto size-4 shrink-0" />
   </MenubarSubTrigger>
 </template>
