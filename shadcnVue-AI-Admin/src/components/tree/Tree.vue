@@ -38,14 +38,16 @@ const { treeDrag, childKey, removeFromParent } = useDrag(props, hookEmit)
 
 provide('treeDrag', treeDrag)
 
-// 注入组件级别状态（供所有 TreeItem 子组件使用）
-provide('treeDisabled', computed(() => props.disabled))
-provide('treeLockChildren', computed(() => props.lockChildren))
-
 const treeContainerRef = ref<HTMLElement | null>(null)
 const currentNodeKey = ref<string | number | null>(null)
 const filterText = ref('')
 const filterNodeMethod = ref<((value: string, data: TreeNode) => boolean) | null>(null)
+const loadingNodeKeys = ref<Set<string | number>>(new Set())
+
+// 注入组件级别状态（供所有 TreeItem 子组件使用）
+provide('treeDisabled', computed(() => props.disabled))
+provide('treeLockChildren', computed(() => props.lockChildren))
+provide('treeLoadingKeys', loadingNodeKeys)
 
 const filteredData = computed({
   get() {
@@ -69,13 +71,25 @@ function isHalfChecked(node: TreeNode): boolean {
   return halfCheckedKeys.value.includes(getNodeKey(node, props.nodeKey, props.fieldNames))
 }
 function isLeaf(node: TreeNode): boolean {
-  const isLeafProp = node?.isLeaf || false
+  if ('isLeaf' in node) return !!node.isLeaf
   const children = getPropValue(node, 'children', props.fieldNames) as TreeNode[]
-  return !!isLeafProp || !children || children.length === 0
+  return !children || children.length === 0
 }
 function isCurrent(node: TreeNode): boolean {
   if (!props.highlightCurrent) return false
   return currentNodeKey.value === getNodeKey(node, props.nodeKey, props.fieldNames)
+}
+
+function isLoading(node: TreeNode): boolean {
+  return loadingNodeKeys.value.has(getNodeKey(node, props.nodeKey, props.fieldNames))
+}
+
+function setLoading(key: string | number, loading: boolean) {
+  if (loading) {
+    loadingNodeKeys.value.add(key)
+  } else {
+    loadingNodeKeys.value.delete(key)
+  }
 }
 
 function handleNodeClick(node: TreeNode) {
@@ -154,7 +168,7 @@ onMounted(() => {
   })
 })
 
-defineExpose({ filter, getCheckedNodes, getCheckedKeys, setChecked, append, remove, insertBefore, insertAfter })
+defineExpose({ filter, getCheckedNodes, getCheckedKeys, setChecked, append, remove, insertBefore, insertAfter, setLoading })
 provide('treeProps', props)
 
 function onRootDragStart() {
@@ -198,8 +212,8 @@ function onRootDragMove(evt: any) {
         :disabled="!!getPropValue(node, 'disabled', props.fieldNames)" :show-icon="showIcon" :block-node="blockNode"
         :draggable="draggable" :expanded-keys="expandedKeys" :checked-keys="checkedKeys"
         :half-checked-keys="halfCheckedKeys" :current-node-key="currentNodeKey" :highlight-current="highlightCurrent"
-        :field-names="props.fieldNames" :node-key="nodeKey" @toggle-expand="toggleExpand" @toggle-check="toggleCheck"
-        @node-click="handleNodeClick">
+        :field-names="props.fieldNames" :node-key="nodeKey" :is-loading="isLoading(node)" @toggle-expand="toggleExpand"
+        @toggle-check="toggleCheck" @node-click="handleNodeClick">
         <template #default="{ node }">
           <slot :node="node" />
         </template>
@@ -212,7 +226,8 @@ function onRootDragMove(evt: any) {
         :disabled="node?.disabled || false" :show-icon="showIcon" :block-node="blockNode" :draggable="draggable"
         :expanded-keys="expandedKeys" :checked-keys="checkedKeys" :half-checked-keys="halfCheckedKeys"
         :current-node-key="currentNodeKey" :highlight-current="highlightCurrent" :field-names="props.fieldNames"
-        :node-key="nodeKey" @toggle-expand="toggleExpand" @toggle-check="toggleCheck" @node-click="handleNodeClick">
+        :node-key="nodeKey" :is-loading="isLoading(node)" @toggle-expand="toggleExpand" @toggle-check="toggleCheck"
+        @node-click="handleNodeClick">
         <template #default="{ node }">
           <slot :node="node" />
         </template>

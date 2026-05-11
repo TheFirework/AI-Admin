@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, ref, type Ref } from 'vue'
-import { ChevronRight, ChevronDown, Folder, FolderOpen, File, GripVertical } from 'lucide-vue-next'
+import { ChevronRight, ChevronDown, Folder, FolderOpen, File, GripVertical, Loader2 } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 import TreeCheckbox from './TreeCheckbox.vue'
 import { VueDraggable } from 'vue-draggable-plus'
@@ -60,6 +60,7 @@ const treeDrag = inject<any>('treeDrag', null)
 // ==================== 组件级别状态（从 Tree 注入）====================
 const treeDisabled = inject<Ref<boolean>>('treeDisabled', ref(false))
 const treeLockChildren = inject<Ref<boolean>>('treeLockChildren', ref(false))
+const treeLoadingKeys = inject<Ref<Set<string | number>>>('treeLoadingKeys', ref(new Set()))
 
 // ==================== 禁用状态计算（双模式）====================
 
@@ -96,6 +97,11 @@ const isLocked = computed(() => {
   if (isComponentLocked.value) return true // 组件级锁定优先
   if (isInNodeLockedZone.value) return true // 节点级继承锁定
   return false
+})
+
+const isNodeLoading = computed(() => {
+  const key = getNodeKey(props.node)
+  return treeLoadingKeys.value.has(key)
 })
 
 // 场景1：当前节点是否可被拖出（pull 权限）
@@ -212,10 +218,10 @@ function isChildHalfChecked(node: TreeNode): boolean {
   return props.halfCheckedKeys.includes(getNodeKey(node))
 }
 function isChildLeaf(node: TreeNode): boolean {
-  const isLeafProp = node.isLeaf as boolean | undefined
+  if ('isLeaf' in node) return !!node.isLeaf
   const childrenKey = props.fieldNames?.children || 'children'
   const childNodes = node[childrenKey] as TreeNode[] | undefined
-  return !!isLeafProp || !childNodes || childNodes.length === 0
+  return !childNodes || childNodes.length === 0
 }
 function isChildCurrent(node: TreeNode): boolean {
   return props.highlightCurrent && props.currentNodeKey === getNodeKey(node)
@@ -321,12 +327,15 @@ function onDragMove(evt: any) {
       <button v-if="!isLeaf" type="button" :class="cn(
         'flex items-center justify-center w-5 h-5 rounded transition-colors',
         'hover:bg-gray-200 dark:hover:bg-gray-700',
-        // 禁用但有子节点时：移除 cursor-not-allowed，允许点击展开
-        isActuallyDisabled && 'opacity-70'
+        isActuallyDisabled && 'opacity-70',
+        isNodeLoading && 'cursor-wait'
       )" @click="handleExpandClick" aria-label="Toggle expand">
         <slot name="switcher-icon">
-          <ChevronDown v-if="isExpanded" class="w-4 h-4 text-gray-500" />
-          <ChevronRight v-else class="w-4 h-4 text-gray-500" />
+          <Loader2 v-if="isNodeLoading" class="w-4 h-4 text-gray-400 animate-spin" />
+          <template v-else>
+            <ChevronDown v-if="isExpanded" class="w-4 h-4 text-gray-500" />
+            <ChevronRight v-else class="w-4 h-4 text-gray-500" />
+          </template>
         </slot>
       </button>
       <span v-else class="w-5" />

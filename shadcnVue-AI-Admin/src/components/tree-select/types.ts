@@ -1,4 +1,5 @@
 import type { TreeNode, TreePropsConfig } from '@/components/tree'
+import type { HTMLAttributes } from 'vue'
 
 export interface TreeSelectProps {
   modelValue?: string | number | (string | number)[]
@@ -22,6 +23,8 @@ export interface TreeSelectProps {
   autoExpandParent?: boolean
   size?: 'sm' | 'default'
   renderAfterExpand?: boolean
+  class?: HTMLAttributes['class']
+  style?: HTMLAttributes['style']
 }
 
 export interface TreeSelectEmits {

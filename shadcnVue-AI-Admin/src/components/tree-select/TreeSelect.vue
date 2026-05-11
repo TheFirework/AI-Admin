@@ -37,7 +37,6 @@ const emit = defineEmits<TreeSelectEmits>()
 const popoverOpen = ref(false)
 const treeRef = ref<InstanceType<typeof Tree> | null>(null)
 const filterText = ref('')
-const loadingNodeKeys = ref<Set<string | number>>(new Set())
 
 const showCheckbox = computed(() => {
   if (props.showCheckbox !== undefined) return props.showCheckbox
@@ -57,14 +56,9 @@ function resolveKey(node: TreeNode): string | number {
 }
 
 function isLeafNode(node: TreeNode): boolean {
-  const isLeafProp = node.isLeaf || false
+  if ('isLeaf' in node) return !!node.isLeaf
   const children = getPropValue(node, 'children', props.fieldNames) as TreeNode[] | undefined
-  return !!isLeafProp || !children || children.length === 0
-}
-
-function isSelectable(node: TreeNode): boolean {
-  if (props.checkStrictly) return true
-  return isLeafNode(node)
+  return !children || children.length === 0
 }
 
 function resolveNodeLabel(node: TreeNode): string {
@@ -122,8 +116,16 @@ const effectiveExpandedKeys = computed<(string | number)[]>(() => {
   return [...merged]
 })
 
+function filterDisabledKeys(keys: (string | number)[]): (string | number)[] {
+  return keys.filter(key => {
+    const node = findNode(props.data, key, props.nodeKey, props.fieldNames)
+    if (!node) return false
+    return !(node.disabled || false)
+  })
+}
+
 const effectiveCheckedKeys = computed<(string | number)[]>(() => {
-  return selectedKeys.value
+  return filterDisabledKeys(selectedKeys.value)
 })
 
 function emitValue(val: string | number | (string | number)[]) {
@@ -139,10 +141,8 @@ function handleNodeClick(node: TreeNode) {
 
   if (props.multiple || showCheckbox.value) return
 
-  if (isSelectable(node)) {
-    emitValue(resolveKey(node))
-    nextTick(() => { popoverOpen.value = false })
-  }
+  emitValue(resolveKey(node))
+  nextTick(() => { popoverOpen.value = false })
 
   emit('node-click', node, null)
 }
@@ -150,7 +150,7 @@ function handleNodeClick(node: TreeNode) {
 function handleCheckChange(_node: TreeNode, _checked: boolean, checkedKeys: (string | number)[]) {
   if (props.disabled) return
   if (props.multiple) {
-    emitValue(checkedKeys)
+    emitValue(filterDisabledKeys(checkedKeys))
   }
 }
 
@@ -184,12 +184,11 @@ async function handleNodeExpand(node: TreeNode, expanded: boolean, _el: unknown)
       const children = getPropValue(node, 'children', props.fieldNames) as TreeNode[] | undefined
       if (!children || children.length === 0) {
         const key = resolveKey(node)
-        if (loadingNodeKeys.value.has(key)) return
-        loadingNodeKeys.value.add(key)
+        treeRef.value?.setLoading(key, true)
         try {
           await props.loadData(node)
         } finally {
-          loadingNodeKeys.value.delete(key)
+          treeRef.value?.setLoading(key, false)
         }
       }
     }
@@ -223,15 +222,17 @@ defineExpose({
 <template>
   <Popover v-model:open="popoverOpen" @update:open="handlePopoverChange">
     <PopoverTrigger as-child>
-      <button type="button" role="combobox" :aria-expanded="popoverOpen" :data-size="size" :disabled="disabled" :class="cn(
-        'border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*=\'text-\'])]:text-muted-foreground',
-        'focus-visible:border-ring focus-visible:ring-ring/50',
-        'flex w-fit min-w-[8rem] items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs',
-        'transition-[color,box-shadow] outline-none focus-visible:ring-[3px]',
-        'disabled:cursor-not-allowed disabled:opacity-50',
-        'data-[size=default]:h-9 data-[size=sm]:h-8',
-        '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=\'size-\'])]:size-4',
-      )">
+      <button type="button" role="combobox" :aria-expanded="popoverOpen" :data-size="size" :disabled="disabled"
+        :style="style" :class="cn(
+          'border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*=\'text-\'])]:text-muted-foreground',
+          'focus-visible:border-ring focus-visible:ring-ring/50',
+          'flex w-[240px] items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs',
+          'transition-[color,box-shadow] outline-none focus-visible:ring-[3px]',
+          'disabled:cursor-not-allowed disabled:opacity-50',
+          'data-[size=default]:h-9 data-[size=sm]:h-8',
+          '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=\'size-\'])]:size-4',
+          props.class,
+        )">
         <span v-if="selectedKeys.length === 0" class="text-muted-foreground">
           {{ placeholder }}
         </span>

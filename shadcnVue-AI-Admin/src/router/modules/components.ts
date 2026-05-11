@@ -70,19 +70,20 @@ const componentsRoutes: RouteRecordRaw[] = [
             }
           },
 
-          // TreeSelect 树形选择器演示
-          {
-            path: '/components/tree/tree-select',
-            name: 'TreeSelectDemo',
-            component: () => import('@/views/components/treeSelect/TreeSelectDemo.vue'),
-            meta: {
-              title: 'TreeSelect 选择器',
-              icon: 'ListTree',
-              description: '展示 TreeSelect 组件：单选、多选、搜索、懒加载、严格模式、复选框单选等',
-              requiresAuth: true
-            }
-          }
+
         ]
+      },
+      // TreeSelect 树形选择器演示
+      {
+        path: '/components/tree-select',
+        name: 'TreeSelectDemo',
+        component: () => import('@/views/components/treeSelect/TreeSelectDemo.vue'),
+        meta: {
+          title: 'TreeSelect 选择器',
+          icon: 'ListTree',
+          description: '展示 TreeSelect 组件：单选、多选、搜索、懒加载、严格模式、复选框单选等',
+          requiresAuth: true
+        }
       }
     ]
   }

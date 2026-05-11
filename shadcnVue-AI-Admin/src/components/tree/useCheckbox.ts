@@ -7,6 +7,9 @@ export function useCheckbox(props: TreeProps, emit: (e: string, ...args: unknown
   const halfCheckedKeys = ref<(string | number)[]>([])
 
   function checkNode(node: TreeNode) {
+    const disabled = node.disabled || false
+    if (disabled) return
+
     const key = getNodeKey(node, props.nodeKey, props.fieldNames)
     if (!checkedKeys.value.includes(key)) {
       checkedKeys.value.push(key)
@@ -24,6 +27,9 @@ export function useCheckbox(props: TreeProps, emit: (e: string, ...args: unknown
   }
 
   function uncheckNode(node: TreeNode) {
+    const disabled = node.disabled || false
+    if (disabled) return
+
     const key = getNodeKey(node, props.nodeKey, props.fieldNames)
     checkedKeys.value = checkedKeys.value.filter(id => id !== key)
 
@@ -54,7 +60,7 @@ export function useCheckbox(props: TreeProps, emit: (e: string, ...args: unknown
       halfCheckedKeys.value.includes(getNodeKey(child, props.nodeKey, props.fieldNames))
     ).length
 
-    const totalChildCount = children.length
+    const totalChildCount = children.filter(child => !(child.disabled || false)).length
     const parentKey = getNodeKey(parent, props.nodeKey, props.fieldNames)
 
     const parentCheckedIndex = checkedKeys.value.indexOf(parentKey)
@@ -87,10 +93,11 @@ export function useCheckbox(props: TreeProps, emit: (e: string, ...args: unknown
         return { checked: isChecked, halfChecked: false }
       }
 
-      const childResults = children.map(child => calculate(child))
+      const enabledChildren = children.filter(child => !(child.disabled || false))
+      const childResults = enabledChildren.map(child => calculate(child))
       const checkedCount = childResults.filter(r => r.checked && !r.halfChecked).length
       const halfCheckedCount = childResults.filter(r => r.halfChecked).length
-      const totalCount = children.length
+      const totalCount = enabledChildren.length
 
       let isChecked: boolean
       let isHalfChecked: boolean
